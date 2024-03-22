@@ -6,19 +6,17 @@ import pandas as pd
 #STEP 0: INITIALIZE
 
 # Parameters
-weights = 160 #the size of the weight table
-initial_weights = 0.0 #The initial value of each each
+weights = 60 #the size of the weight table
+w0 = 0.0 #The initial value of each each
 learning_rate = 0.1
-rho = 10 #quantization resolution of input vector x_i = number of bins (N_i)
+rho = 20 #quantization resolution of input vector x_i = number of bins (N_i)
 g = 3 #generalization size
+epoch = 50 #number of generations/epochs
 
+#--Based on the Data--
 in_dim = 2 #number of input dimensions
-out_dim = 1
-dim_tot = in_dim + out_dim #total number of dimensions
-
 fill_value = 1000 #This number is used to set the initial minimum value for the indexing function.
-epoch = 50
-D_train = 100         #D_train is the number of training datapoints
+D_train = 100 #D_train is the number of training datapoints
 
 '''def generate_data():
     x = np.random.rand(in_dim)
@@ -33,6 +31,8 @@ df = df.sample(frac = 1)
 data = df.values
 
 D_total = df.shape[0]
+dim_tot = df.shape[1] #total number of dimensions
+out_dim = dim_tot - in_dim #number of output dimensions
 
 #STEP 1: QUANTIZE
 
@@ -59,24 +59,22 @@ for i in range(in_dim):
         #print(f'j: {j}/{D_total-1}')
         #print(data[j][i])
         index[i][j] = math.ceil(((rho/(xmax[i] - xmin[i]))*(data[j][i] - xmin[i])) - 1) #Eq. 1
-        if index[i][j] < 0 or index[i][j] == 'NaN':
+        if index[i][j] < 0: #make sure there are no constant inputs (i.e. switch one)
             index[i][j] = 0 #Eq. 2
         #print(index)
 print('Final Index: ',index)
 
 #STEP 2: CREATE RANDOM TABLES
 
-#The size of each random table i is given by Eq. 3
+#The size of each random table i is given by Eqs. (3)
 # Eq 3.) Ci (size of the random table of input vector x_i) = rho + g − 1, i = 1,2,...,n
-# edere
 rand_table_size = rho + g - 1
 
 #each random table i consists of uniform random numbers that are generated from the interval [0,k/2]
-
 rand_table = np.random.uniform(0,weights/2,[in_dim,rand_table_size]) # A 2x3 array
 rand_table = np.ceil(rand_table)
 print(f"Random Tables: {rand_table}")
-weight_table = np.full((weights,out_dim),initial_weights)
+weight_table = np.full((weights,out_dim),w0)
 print('Weight Table: ', weight_table.T)
 a_matrix = weight_table
 print('Association Matrix: ', a_matrix.T)
@@ -89,8 +87,8 @@ while h < epoch:
         k = np.zeros((in_dim,g))
         for i in range(in_dim): #i is the current dimension index
             new_index = int(index[i][j])
-            if new_index >= 10:
-                new_index = 9
+            if new_index >= rho:
+                new_index = rho - 1
             #print('New Index: ',new_index)
             k[i] = rand_table[i,new_index:new_index+g].astype(int)
             #print(k)
@@ -146,8 +144,8 @@ for j in range(D_train,D_total):
     k = np.zeros((in_dim,g))
     for i in range(in_dim):
         new_index = int(index[i][j])
-        if new_index >= 10:
-            new_index = 9
+        if new_index >= rho:
+            new_index = rho-1
         k[i] = rand_table[i,new_index:new_index+g].astype(int)
         shift_factor = new_index % g
         k[i, :] = np.roll(k[i, :], shift_factor)
