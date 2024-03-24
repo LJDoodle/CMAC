@@ -5,6 +5,24 @@ import pandas as pd
 
 # MULTIPLE INPUTS, MULTIPLE OUTPUTS
 
+# FUNCT DEFINITIONS
+'''
+    learn
+    inputs:
+    - w_table: the weight table, an 2-D array of weights
+    - a_table: the adress table, a 1-D array
+    - dif: the differences between the predected and actual outputs, a 1-D array
+    - rate: the learning rate, defaults to 0.1
+    - g: the generalization factor, defaults to 10
+    function: applies 'w(h+1) = w(h) + (beta*(y_real - y_predicted)/g)' to update the weights
+'''
+def learn(w_table, a_table, dif, rate=.1, g=10):
+    weights = w_table.shape[0]
+    for d in enumerate(w_table):
+        for dim in range(w_table.shape[1]):
+            if (a_table[d[0] % weights] == 1.0):
+                w_table[d[0] % weights, dim] += ((rate * dif[dim]) / g)            
+
 # STEP 0: INITIALIZE
 
 # Parameters
@@ -120,11 +138,7 @@ while h < epoch:
             #print('Step: ',(learning_rate * difference[dim]) / g)
 
             #STEP 5: LEARNING ALGORITHM
-            # w(h+1) = w(h) + (beta*(y_real - y_predicted)/g)
-            for d in enumerate(weight_table):
-                for dim in range(out_dim):
-                  if (address_table[d[0] % weights] == 1.0):
-                    weight_table[d[0] % weights, dim] += ((learning_rate * difference[dim]) / g)
+            learn(weight_table, address_table, difference, learning_rate, g)
         #print('Weight Table (',i,',',j,'): ', weight_table)
     #endFor
     #STEP 6: EVALUATE CLASSIFICATION ERROR
