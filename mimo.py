@@ -53,7 +53,7 @@ print(f"{D_total} {dim_tot} {out_dim}")
 
 #STEP 1: QUANTIZE
 
-# Determines the maximum and minimum values for each dimension
+#--Determine the max and min values for each dimension--
 xmax=np.zeros(in_dim)
 xmin=np.full(in_dim, fill_value)
 for datum in data:
@@ -87,7 +87,7 @@ print('Final Index: ',index)
 rand_table_size = rho + g - 1
 
 #each random table i consists of uniform random numbers that are generated from the interval [0,k/2]
-rand_table = np.random.uniform(0,weights/2,[in_dim,rand_table_size]) # A 2x3 array
+rand_table = np.random.uniform(0,weights/2,[in_dim,rand_table_size])
 rand_table = np.ceil(rand_table)
 print(f"Random Tables: {rand_table}")
 weight_table = np.full((weights,out_dim),w0)
@@ -95,8 +95,7 @@ print('Weight Table: ', weight_table.T)
 a_matrix = weight_table
 print('Association Matrix: ', a_matrix.T)
 
-h = 0
-while h < epoch:
+for h in range(epoch):
     for j in range(D_train):
         k = np.zeros((in_dim,g))
         for i in range(in_dim): #i is the current dimension index
@@ -129,22 +128,12 @@ while h < epoch:
             #print('Final Address Table: ',address_table)
 
             #STEP 4: CALCULATE ACTUAL OUTPUT
-            #print(weight_table.T)
-            #print(address_table)
             output = weight_table.T @ address_table
-            #print('Output: ',output)
             difference = data[j,in_dim:] - output
-            #print('Difference: ',difference)
-            #print('Step: ',(learning_rate * difference[dim]) / g)
 
             #STEP 5: LEARNING ALGORITHM
             learn(weight_table, address_table, difference, learning_rate, g)
-        #print('Weight Table (',i,',',j,'): ', weight_table)
-    #endFor
     #STEP 6: EVALUATE CLASSIFICATION ERROR
-    h += 1
-#endWhile
-
 print('Weight Table: ', weight_table.T)
 
 # STEP 7: MEASURE CLASSIFICATION ERROR
