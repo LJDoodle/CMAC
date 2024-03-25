@@ -127,12 +127,12 @@ for h in range(epoch):
             address_table[xor]=1
             #print('Final Address Table: ',address_table)
 
-            #STEP 4: CALCULATE ACTUAL OUTPUT
-            output = weight_table.T @ address_table
-            difference = data[j,in_dim:] - output
+        #STEP 4: CALCULATE ACTUAL OUTPUT
+        output = weight_table.T @ address_table
+        difference = data[j,in_dim:] - output
 
-            #STEP 5: LEARNING ALGORITHM
-            learn(weight_table, address_table, difference, learning_rate, g)
+        #STEP 5: LEARNING ALGORITHM
+        learn(weight_table, address_table, difference, learning_rate, g)
     #STEP 6: EVALUATE CLASSIFICATION ERROR
 print('Weight Table: ', weight_table.T)
 
