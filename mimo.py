@@ -33,16 +33,15 @@ rho = 50 #quantization resolution of input vector x_i = number of bins (N_i)
 g = 100 #generalization size
 epoch = 50 #number of generations/epochs
 
-#--Based on the Data--
-in_dim = 2 #number of input dimensions
-fill_value = 1000 #This number is used to set the initial minimum value for the indexing function.
-D_train = 200 #D_train is the number of training datapoints
-
 #--Import Data--
 df = pd.read_csv('filename.csv') #Replace 'filename.csv' with the address of the csv file containing your data
 df = df.sample(frac = 1)
 data = df.values
 
+#--Based on the Data--
+in_dim = 2 #number of input dimensions
+fill_value = 1000 #This number is used to set the initial minimum value for the indexing function.
+D_train = 200 #D_train is the number of training datapoints
 D_total = df.shape[0]
 dim_tot = df.shape[1] #total number of dimensions
 out_dim = dim_tot - in_dim #number of output dimensions
