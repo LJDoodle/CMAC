@@ -98,33 +98,26 @@ for h in range(epoch):
     for j in range(D_train):
         k = np.zeros((in_dim,g))
         for i in range(in_dim): #i is the current dimension index
-            new_index = int(index[i][j])
-            if new_index >= rho:
-                new_index = rho - 1
-            #print('New Index: ',new_index)
-            k[i] = rand_table[i,new_index:new_index+g].astype(int)
-            #print(k)
-            shift_factor = new_index % g
-            #print(shift_factor)
-            k[i, :] = np.roll(k[i, :], shift_factor)
+            s_index = int(index[i][j])
+            if s_index >= rho:
+                s_index = rho - 1
+            #print(f'S-Index: {s_index}')
+            k[i] = rand_table[i,s_index:s_index+g].astype(int)
+            #print(f'k (before rolling): {k}')
+            g_index = s_index % g
+            #print(f'G-Index: {g_index}')
+            k[i, :] = np.roll(k[i, :], g_index)
             #print('k, ',k)
         #print('k, ',k)
         address_table = np.zeros((weights))
-        #print('Address Table: ', address_table)
         for i in range(g):
-            temp_address = k[:,i]
-            #print('Temp Address: ',temp_address)
-            last = temp_address[0]
-            if in_dim == 1:
-                xor = int(last)
-            else:
-                for item in temp_address[1:]:
-                    #print('item - ',item,', last - ',last)
-                    xor = int(item) ^ int(last)
-                    last = int(item)
-                    #print('xor - ',xor)
+            #print('Temp Address: ',k[:,i])
+            xor = k[0,i]
+            for j in range(in_dim-1):
+                xor = int(k[j+1,i]) ^ int(xor)
+                #print('xor - ',xor)
             address_table[xor]=1
-            #print('Final Address Table: ',address_table)
+        #print('Final Address Table: ',address_table)
 
         #STEP 4: CALCULATE ACTUAL OUTPUT
         output = weight_table.T @ address_table
