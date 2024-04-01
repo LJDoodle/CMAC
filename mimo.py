@@ -39,7 +39,7 @@ fill_value = 1000 #This number is used to set the initial minimum value for the 
 D_train = 200 #D_train is the number of training datapoints
 
 #--Import Data--
-df = pd.read_csv('filename.csv')
+df = pd.read_csv('filename.csv') #Replace 'filename.csv' with the address of the csv file containing your data
 df = df.sample(frac = 1)
 data = df.values
 
