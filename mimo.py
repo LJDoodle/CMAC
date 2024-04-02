@@ -40,7 +40,6 @@ data = df.values
 
 #--Based on the Data--
 in_dim = 2 #number of input dimensions
-fill_value = 1000 #This number is used to set the initial minimum value for the indexing function.
 D_train = 200 #D_train is the number of training datapoints
 D_total = df.shape[0]
 dim_tot = df.shape[1] #total number of dimensions
@@ -54,7 +53,7 @@ print(f"{D_total} {dim_tot} {out_dim}")
 
 #--Determine the max and min values for each dimension--
 xmax=np.zeros(in_dim)
-xmin=np.full(in_dim, fill_value)
+xmin=np.full(in_dim, float('inf'))
 for datum in data:
     for dim in range(in_dim):
         if datum[dim] > xmax[dim]:
