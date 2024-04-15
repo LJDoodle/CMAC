@@ -2,6 +2,7 @@ import math
 import numpy as np
 import random
 import pandas as pd
+import time
 
 # MULTIPLE INPUTS, MULTIPLE OUTPUTS
 
@@ -93,6 +94,8 @@ print('Weight Table: ', weight_table.T)
 a_matrix = weight_table
 print('Association Matrix: ', a_matrix.T)
 
+start = time.time()
+
 for h in range(epoch):
     for j in range(D_train):
         k = np.zeros((in_dim,g))
@@ -125,7 +128,9 @@ for h in range(epoch):
         #STEP 5: LEARNING ALGORITHM
         learn(weight_table, address_table, difference, learning_rate, g)
     #STEP 6: EVALUATE CLASSIFICATION ERROR
-print('Weight Table: ', weight_table.T)
+#print('Weight Table: ', weight_table.T)
+end = time.time()
+print("Execution time:", end - start)
 
 # STEP 7: MEASURE CLASSIFICATION ERROR
 
