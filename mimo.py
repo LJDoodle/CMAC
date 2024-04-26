@@ -2,6 +2,7 @@ import math
 import numpy as np
 import random
 import pandas as pd
+import tensorflow as tf
 import time
 
 # MULTIPLE INPUTS, MULTIPLE OUTPUTS
@@ -54,13 +55,10 @@ print(f"{D_total} {dim_tot} {out_dim}")
 
 #--Determine the max and min values for each dimension--
 xmax=np.zeros(in_dim)
-xmin=np.full(in_dim, float('inf'))
-for datum in data:
-    for dim in range(in_dim):
-        if datum[dim] > xmax[dim]:
-            xmax[dim] = datum[dim]
-        if datum[dim] < xmin[dim]:
-            xmin[dim] = datum[dim]
+xmin=np.zeros(in_dim)
+for dim in range(in_dim):
+  xmax[dim] = tf.reduce_max(data[:,dim])
+  xmin[dim] = tf.reduce_min(data[:,dim])
 print(xmax)
 print(xmin)
 
