@@ -128,7 +128,6 @@ for h in range(epoch):
     #STEP 6: EVALUATE CLASSIFICATION ERROR
 #print('Weight Table: ', weight_table.T)
 end = time.time()
-print("Execution time:", end - start)
 
 # STEP 7: MEASURE CLASSIFICATION ERROR
 
@@ -169,4 +168,4 @@ for j in range(D_train,D_total):
 avg_error = neterror / (D_total - D_train)
 print(f"rho:\t{rho}\nweights:\t{weights}")
 print('Average Error:\t',avg_error)
-#print('Test Outputs (',j,'): ',output, ', ',data[dim_tot-1][j],', ',difference)
+print("Training Time:\t", end - start)
