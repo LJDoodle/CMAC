@@ -30,9 +30,9 @@ def learn(w_table, a_table, dif, rate=.1, g=10):
 # Parameters
 weights = 100 #the size of the weight table
 w0 = 0.0 #The initial value of each each
-learning_rate = 0.1
-rho = 50 #quantization resolution of input vector x_i = number of bins (N_i)
-g = 100 #generalization size
+learning_rate = 0.1 #How much the weights are adjusted for each training example
+rho = 50 #quantization resolution of input vector (number of bins)
+g = 100 #generalization parameter, how much each training datapoint effects its neighbors
 epoch = 50 #number of generations/epochs
 
 #--Import Data--
@@ -41,7 +41,7 @@ df = df.sample(frac = 1)
 data = df.values
 
 #--Based on the Data--
-in_dim = 2 #number of input dimensions
+in_dim = 2 #number of input dimensions, must be greater than one
 D_train = 200 #D_train is the number of training datapoints
 D_total = df.shape[0]
 dim_tot = df.shape[1] #total number of dimensions
