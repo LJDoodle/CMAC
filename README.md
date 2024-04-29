@@ -10,3 +10,5 @@ D_train is somewhat discretionary, but must make sense within the context of you
 
 FOR THE MIMO CMAC, in_dim MUST BE GREATER THAN ONE.
 For a CMAC with one dimension of input, there are a variety of models available.
+
+Equation numbers are usually references to Wu et al. (2011)
