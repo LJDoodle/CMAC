@@ -23,7 +23,50 @@ def learn(w_table, a_table, dif, rate=.1, g=10):
     for d in enumerate(w_table):
         for dim in range(w_table.shape[1]):
             if (a_table[d[0] % weights] == 1.0):
-                w_table[d[0] % weights, dim] += ((rate * dif[dim]) / g)            
+                w_table[d[0] % weights, dim] += ((rate * dif[dim]) / g)     
+
+'''
+    temp_matrix
+    inputs:
+    - dim: the number of input dimensions
+    - g: the generalization factor
+    - index: a matrix
+    - rho: the input density
+    - rand_table: the random table
+    function: creates a temporary matrix of the wokring data and shifts it,
+    meant for before passing to the association matrix
+'''
+def temp_matrix(dim,g,index,rho,rand_table):
+  k = np.zeros((dim,g))
+  for i in range(dim): #i is the current dimension index
+    new_index = int(index[i][j])
+    if new_index >= rho:
+      new_index = rho - 1
+      #print('New Index: ',new_index)
+    k[i] = rand_table[i,new_index:new_index+g].astype(int)
+    #print(k)
+    shift_factor = new_index % g
+    #print(shift_factor)
+    k[i, :] = np.roll(k[i, :], shift_factor)
+    #print('k, ',k)
+  #print('k, ',k)
+  return k
+
+def address_matrix(weights, g):
+  address_table = np.zeros((weights))
+  #print('Address Table: ', address_table)
+  for i in range(g):
+      temp_address = k[:,i]
+      #print('Temp Address: ',temp_address)
+      last = temp_address[0]
+      for item in temp_address[1:]:
+        #print('item - ',item,', last - ',last)
+        xor = int(item) ^ int(last)
+        last = int(item)
+        #print('xor - ',xor)
+      address_table[xor]=1
+      #print('Final Address Table: ',address_table)
+  return address_table
 
 # STEP 0: INITIALIZE
 
@@ -95,29 +138,9 @@ print('Association Matrix: ', a_matrix.T)
 start = time.time()
 
 for h in range(epoch):
-    for j in range(D_train):
-        k = np.zeros((in_dim,g))
-        for i in range(in_dim): #i is the current dimension index
-            s_index = int(index[i][j])
-            if s_index >= rho:
-                s_index = rho - 1
-            #print(f'S-Index: {s_index}')
-            k[i] = rand_table[i,s_index:s_index+g].astype(int)
-            #print(f'k (before rolling): {k}')
-            g_index = s_index % g
-            #print(f'G-Index: {g_index}')
-            k[i, :] = np.roll(k[i, :], g_index)
-            #print('k, ',k)
-        #print('k, ',k)
-        address_table = np.zeros((weights))
-        for i in range(g):
-            #print('Temp Address: ',k[:,i])
-            xor = k[0,i]
-            for j in range(in_dim-1):
-                xor = int(k[j+1,i]) ^ int(xor)
-                #print('xor - ',xor)
-            address_table[xor]=1
-        #print('Final Address Table: ',address_table)
+    for j in range(D_train-1):
+        k = temp_matrix(in_dim,g,index,rho,rand_table)
+        address_table = address_matrix(weights,g)
 
         #STEP 4: CALCULATE ACTUAL OUTPUT
         output = weight_table.T @ address_table
