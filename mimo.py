@@ -184,6 +184,8 @@ for j in range(D_train,D_total):
     #Step 4: calculate actual output
     output = weight_table.T @ address_table
     difference = data[j,in_dim:] - output
+
+    #Update these print statements to show the data you are interested in observing
     #print(data[j,:],'\t',output) #input, expected output(s), prediction(s)
     print(data[j,0],'\t',data[j,1],'\t',data[j, in_dim],'\t',data[j, in_dim+1],'\t',output[0],'\t',output[1])
     neterror += np.sqrt(np.sum((np.square(difference))))
