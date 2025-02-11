@@ -79,7 +79,7 @@ g = 100 #generalization parameter, how much each training datapoint effects its 
 epoch = 50 #number of generations/epochs
 
 #--Import Data--
-df = pd.read_csv('filename.csv') #Replace 'filename.csv' with the address of the csv file containing your data
+df = pd.read_csv('tvdata.csv') #Replace 'tvdata.csv' with the address of the csv file containing your training and validation data
 df = df.sample(frac = 1)
 data = df.values
 
@@ -108,13 +108,13 @@ print(xmin)
 # Eqs. (1–2) are applied to quantize the components of the input patterns.
 # Eq 1.) Sij = [(N_i/(x_i^max - x_i^min))x(x_ij - x_i^min)] - 1
 # Eq 2.) If Sij < 0, --> Sij = 0
-index = np.zeros((in_dim, D_total))
+index = np.zeros((D_total,in_dim))
 for i in range(in_dim):
     print('i: ',i)
     for j in range(D_total):
         #print(f'j: {j}/{D_total-1}')
         #print(data[j][i])
-        index[i][j] = math.ceil(((rho/(xmax[i] - xmin[i]))*(data[j][i] - xmin[i])) - 1) #Eq. 1
+        index[j][i] = math.ceil(((rho/(xmax[i] - xmin[i]))*(data[j][i] - xmin[i])) - 1) #Eq. 1
         if index[i][j] < 0: #make sure there are no constant inputs (i.e. switch one)
             index[i][j] = 0 #Eq. 2
         #print(index)
