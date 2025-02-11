@@ -2,10 +2,43 @@ import math
 import numpy as np
 import random
 import pandas as pd
-import tensorflow as tf
+import torch
 import time
 
-# MULTIPLE INPUTS, MULTIPLE OUTPUTS
+class CMAC:
+    def __init__(self,weights,input_density,generalization,epoch,train_percent,data,learning_rate=0.01,in_dim=2): # STEP 0: INITIALIZE    
+        self.weights = weights #the size of the weight table
+        self.lr = learning_rate #How much the weights are adjusted for each training example
+        self.rho = input_density #quantization resolution of input vector (number of bins)
+        self.g = generalization #generalization parameter, how much each training datapoint effects its neighbors
+        self.epoch = epoch #number of generations/epochs
+        self.train_percent = train_percent #The percentage of datapoints reserved for training
+        self.in_dim = in_dim #number of input dimensions, must be greater than one (FOR FUTURE REFERENCE, TRY TO GET in_dim=1 TO WORK)
+        self.data = torch.from_numpy(data)
+
+        self.num_data = self.data.size(0) #number of datapoints
+        self.out_dim = self.data.size(1) - self.in_dim #number of output dimensions (total dimensions - input dimensions)
+
+        self.xmax = self.data.max(dim=0) #takes the maximum datapoint for each input dimension (i.e. each column)
+        self.xmin = self.data.min(dim=0) # ...  ... minimum ...
+
+    def quantize(self): #STEP 1: QUANTIZE
+        # Eqs. (1–2) are applied to quantize the components of the input patterns.
+        # Eq 1.) Sij = [(N_i/(x_i^max - x_i^min))x(x_ij - x_i^min)] - 1
+        # Eq 2.) If Sij < 0, --> Sij = 0
+        self.index = torch.zeros((self.num_data,self.in_dim,))
+        for i in range(self.in_dim):
+            print('i: ',i)
+            for j in range(self.num_data):
+                #print(f'j: {j}/{D_total-1}')
+                #print(data[j][i])
+                self.index[j][i] = math.max((math.ceil(((self.rho/(self.xmax[i] - self.xmin[i]))*(self.data[j][i] - self.xmin[i])) - 1)),0) #Eq. 1
+                #print(index)
+        print('Final Index: ',self.index)
+        
+
+
+
 
 # FUNCT DEFINITIONS
 '''
@@ -68,15 +101,7 @@ def address_matrix(weights, g):
       #print('Final Address Table: ',address_table)
   return address_table
 
-# STEP 0: INITIALIZE
 
-# Parameters
-weights = 100 #the size of the weight table
-w0 = 0.0 #The initial value of each each
-learning_rate = 0.1 #How much the weights are adjusted for each training example
-rho = 50 #quantization resolution of input vector (number of bins)
-g = 100 #generalization parameter, how much each training datapoint effects its neighbors
-epoch = 50 #number of generations/epochs
 
 #--Import Data--
 df = pd.read_csv('tvdata.csv') #Replace 'tvdata.csv' with the address of the csv file containing your training and validation data
@@ -84,41 +109,10 @@ df = df.sample(frac = 1)
 data = df.values
 
 #--Based on the Data--
-in_dim = 2 #number of input dimensions, must be greater than one
 D_train = 200 #D_train is the number of training datapoints
 D_total = df.shape[0]
 dim_tot = df.shape[1] #total number of dimensions
 out_dim = dim_tot - in_dim #number of output dimensions
-
-# For verification
-print(data)
-print(f"{D_total} {dim_tot} {out_dim}")
-
-#STEP 1: QUANTIZE
-
-#--Determine the max and min values for each dimension--
-xmax=np.zeros(in_dim)
-xmin=np.zeros(in_dim)
-for dim in range(in_dim):
-  xmax[dim] = tf.reduce_max(data[:,dim])
-  xmin[dim] = tf.reduce_min(data[:,dim])
-print(xmax)
-print(xmin)
-
-# Eqs. (1–2) are applied to quantize the components of the input patterns.
-# Eq 1.) Sij = [(N_i/(x_i^max - x_i^min))x(x_ij - x_i^min)] - 1
-# Eq 2.) If Sij < 0, --> Sij = 0
-index = np.zeros((D_total,in_dim))
-for i in range(in_dim):
-    print('i: ',i)
-    for j in range(D_total):
-        #print(f'j: {j}/{D_total-1}')
-        #print(data[j][i])
-        index[j][i] = math.ceil(((rho/(xmax[i] - xmin[i]))*(data[j][i] - xmin[i])) - 1) #Eq. 1
-        if index[i][j] < 0: #make sure there are no constant inputs (i.e. switch one)
-            index[i][j] = 0 #Eq. 2
-        #print(index)
-print('Final Index: ',index)
 
 # STEP 2: CREATE RANDOM TABLES
 
